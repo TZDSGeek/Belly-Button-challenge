@@ -6,8 +6,6 @@ console.log("Data Promise: ", dataPromise);
 
 // Fetch the JSON data and console log it
 
-function sample (sample){
-
     d3.json(url).then(function(data) {
         console.log(data);
       
@@ -76,9 +74,28 @@ function sample (sample){
       Plotly.newPlot('myDiv', bubbleData, layout);
 
 
-    // Display the sample Meta Data
+    // Create Drop Down Menu Options
 
-
+    function init() {
+        // Grab a reference to the dropdown select element
+        let selector = d3.select("#selDataset");
+      
+        // Use the list of sample names to populate the select options
+        d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
+          let sampleNames = data.names;
+      
+          for (let i = 0; i < sampleNames.length; i++){
+            selector
+              .append("option")
+              .text(sampleNames[i])
+              .property("value", sampleNames[i]);
+          };
+      
+          // Use the first sample from the list to build the initial plots
+          let firstSample = sampleNames[0];
+          buildCharts(firstSample);
+          buildMetadata(firstSample);
+        });
       
       
       
@@ -86,7 +103,7 @@ function sample (sample){
       
      
       
-      });
+    init()}});
 
-}
+
 
