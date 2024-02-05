@@ -1,17 +1,17 @@
 const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
 
-// // Promise Pending
-const dataPromise = d3.json(url);
-console.log("Data Promise: ", dataPromise);
+// // // Promise Pending
+// const dataPromise = d3.json(url);
+// console.log("Data Promise: ", dataPromise);
 
 // Fetch the JSON data and console log it
 
-    d3.json(url).then(function(data) {
-        console.log(data);
+    // d3.json(url).then(function(data) {
+    //     console.log(data);
       
         //Create Variable for Sample Data
       
-        let sampleData = data.samples;
+        // let sampleData = data.samples;
       
         //Create Filter for the data
       
@@ -26,54 +26,110 @@ console.log("Data Promise: ", dataPromise);
         // let OtuIds = sampleFilterIndexed.otu_ids;
       
         // let otuLabels = sampleFilter.otu_labels;
+
+        // Create function for Charts
+
+        function charts(sample) {
+
+        d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
+
+            let sampleData = data.samples;
+            
+            let sortedData = sampleData.filter(firstRow=>firstRow.id == sample);
+
+            let slice = sortedData[0];
+
+            let samepleValues = slice.sample_values;
         
-    // Sort the Otu values in descending order and slice to get the top 10
+            let otuIds = slice.otu_ids;
+        
+            let otuLabels = slice.otu_labels;
 
-    let SortedData = sampleData.sort(function compareFunction(firstnum,secondnum){
-        return secondnum.sample_values - firstnum.sample_values
-    });
+               // Create Variables for bar chart
 
-    let top10Slice = SortedData.slice(0,10);
+            let y = otuIds.slice(0,10).map(otuID => `OTU ${otuID}`).reverse();
+
+            let x = samepleValues.slice(0,10).reverse();
+
+            let text = otuLabels.slice(0,10).reverse();
+
     
     // Create Horizontal Bar Chart using the sliced data
 
-        let trace1 = {
-        x: top10Slice.map(object=>object.sample_values),
-        y: top10Slice.map(object=>object.otu_ids),
-        text: top10Slice.map(object=>object.otu_labels),
-        type: 'bar',
-        orientation: 'h'
+            let trace1 = {
+            x: x,
+            y: y,
+            text: text,
+            type: 'bar',
+            orientation: 'h'
 
-    };
+        };
 
-    let barData = [trace1];
+            let barLayout = {
+                titel: 'Top 10 Sample Vales',
+                margin: { t: 30, l: 150 }
+            }
 
-    Plotly.newPlot('bar', barData);
+        let barData = [trace1];
+
+        Plotly.newPlot('bar', barData,barLayout);
+
+        
     
-    // Create Buble Chart 
+        
+    // Sort the Otu values in descending order and slice to get the top 10
 
-    let trace2 = {
-        x: sampleData.map(object=>object.otu_ids),
-        y: sampleData.map(object=>object.sample_values),
+    // let SortedData = sampleData.sort(function compareFunction(firstnum,secondnum){
+    //     return secondnum.sample_values - firstnum.sample_values
+    // });
+
+// Create Bubble Chart
+
+        let trace2 = {
+        x: otuIds,
+        y: samepleValues,
         mode: 'markers',
         marker: {
-          color: sampleData.map(object=>object.otu_ids),
-          text: sampleData.map(object=>object.otu_labels),
-          size: sampleData.map(object=>object.sample_values)
+          color: otuIds,
+          text: otuLabels,
+          size: samepleValues,
+          type: 'bubble'
         }
       };
       
       let bubbleData = [trace2];
       
-      let layout = {
+      let bubbleLayout = {
         showlegend: false,
         height: 600,
-        width: 600
+        width: 1200
       };
       
-      Plotly.newPlot('myDiv', bubbleData, layout);
+      Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+    });
+
+    }
+
+      //Get Meta Data
+      function metadata (sample) {
+        d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then((data) => {
+
+        let metaData = data.metadata;
+
+        let filteredData = metaData.filter(firstRow=>firstRow.id == sample);
+
+        let metaslice = filteredData[0];
+
+        let PANEL = d3.select("#sample-metadata");
+
+        for (key in metaslice) {
+            PANEL.append("h6").text(`${key.toUpperCase()}: ${metaslice[key]}`);
+        }
 
 
+      })
+
+    }
     // Create Drop Down Menu Options
 
     function init() {
@@ -93,17 +149,18 @@ console.log("Data Promise: ", dataPromise);
       
           // Use the first sample from the list to build the initial plots
           let firstSample = sampleNames[0];
-          buildCharts(firstSample);
-          buildMetadata(firstSample);
+            charts(firstSample);
+            metadata(firstSample);
+
         });
-      
-      
-      
-      //use map to get the full data
-      
-     
-      
-    init()}});
+    }
 
+    // This Selector
+    
+    function optionChanged(sample) {
+        charts(sample);
+        metadata(sample);
 
-
+    }
+    
+      init();
