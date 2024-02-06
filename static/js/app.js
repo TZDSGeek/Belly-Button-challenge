@@ -8,24 +8,6 @@ const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/
 
     // d3.json(url).then(function(data) {
     //     console.log(data);
-      
-        //Create Variable for Sample Data
-      
-        // let sampleData = data.samples;
-      
-        //Create Filter for the data
-      
-        // let sampleFilter = sampleData.filter(firstRow=>firstRow.id == sample);
-      
-        // let sampleFilterIndexed = sampleFilter[0];
-      
-        //Create Variables for sampleValues,otuId's,otuLabels
-      
-        // let samepleValues = sampleFilterIndexed.sample_values;
-      
-        // let OtuIds = sampleFilterIndexed.otu_ids;
-      
-        // let otuLabels = sampleFilter.otu_labels;
 
         // Create function for Charts
 
@@ -122,14 +104,17 @@ const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/
 
         let PANEL = d3.select("#sample-metadata");
 
+        PANEL.html("") 
+
         for (key in metaslice) {
             PANEL.append("h6").text(`${key.toUpperCase()}: ${metaslice[key]}`);
         }
-
+    
 
       })
 
     }
+    
     // Create Drop Down Menu Options
 
     function init() {
